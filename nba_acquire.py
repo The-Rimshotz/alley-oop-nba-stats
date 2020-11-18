@@ -29,10 +29,11 @@ def null_percentages(df):
 player_data_df = pd.read_csv("/Users/DataScience/Rimshotz/alley-oop-nba-stats/player_data.csv")
 
 # title and print out shape of dataframe
+a = player_data_df.isnull().sum().sum()
 player_data_shape = player_data_df.shape
 print("Player Data Information")
 print(f"Consisting of {player_data_shape[0]} rows and {player_data_shape[1]} columns")
-
+print(f"It has loads of data, but also has {a} missing values.") 
 # cleaning up missing values for george karl
 player_data_df["height"] = player_data_df["height"].fillna("6-2")
 player_data_df["weight"] = player_data_df["weight"].fillna(185)
@@ -68,9 +69,11 @@ player_data_df
 # import the Players.csv file into pandas
 players_df = pd.read_csv("/Users/DataScience/Rimshotz/alley-oop-nba-stats/Players.csv")
 # title and print out shape of dataframe
+b = players_df.isnull().sum().sum()
 players_shape = players_df.shape
 print("Player Data Information")
 print(f"Consisting of {players_shape[0]} rows and {players_shape[1]} columns")
+print(f"Not all data is present.  We still have {b} missing values.")
 # print out the dataframe
 players_df
 
@@ -78,8 +81,14 @@ players_df
 # import the Seasons_Stats.csv file into pandas
 seasons_stats_df = pd.read_csv("/Users/DataScience/Rimshotz/alley-oop-nba-stats/Seasons_Stats.csv")
 # title and print out shape of dataframe
+c = seasons_stats_df.isnull().sum().sum()
 seasons_stats_shape = seasons_stats_df.shape
 print("Statistical Information by Season")
 print(f"Consisting of {seasons_stats_shape[0]} rows and {seasons_stats_shape[1]} columns")
+print(f"While informative, still needs work: we are missing {c} values.")
 #print out the dataframe
 seasons_stats_df
+
+#-------- Resources ----------
+# Dataset from Kaggle can be found at https://www.kaggle.com/drgilermo/nba-players-stats?select=Players.csv
+# George Karl information on his time with the Spurs is at https://www.statscrew.com/basketball/roster/t-SAA/y-1974
