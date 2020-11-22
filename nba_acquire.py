@@ -3,7 +3,7 @@ import pandas as pd
 import numpy as np
 import os
 
-%matplotlib inline 
+#%matplotlib inline 
 import matplotlib as plt
 import seaborn as sns
 
@@ -25,188 +25,209 @@ def null_percentages(df):
     return perct
 
 #------- Player Data DataFrame ------------
-# import the player_data.csv file into pandas
-player_data_df = pd.read_csv("/Users/DataScience/Rimshotz/alley-oop-nba-stats/player_data.csv")
+def get_player_data():
+    """
+    function to return cleaned up 'player_data_df' = cleaning done in acquire.ipynb
+    """
+    # import the player_data.csv file into pandas
+    player_data_df = pd.read_csv("/Users/DataScience/Rimshotz/alley-oop-nba-stats/player_data.csv")
 
-# title and print out shape of dataframe
-a = player_data_df.isnull().sum().sum()
-player_data_shape = player_data_df.shape
-print("Player Data Information")
-print(f"Consisting of {player_data_shape[0]} rows and {player_data_shape[1]} columns")
-print(f"It has loads of data, but also has {a} missing values.")
+    # title and print out shape of dataframe
+    a = player_data_df.isnull().sum().sum()
+    player_data_shape = player_data_df.shape
+    print("Player Data Information")
+    print(f"Consisting of {player_data_shape[0]} rows and {player_data_shape[1]} columns")
+    print(f"It has loads of data, but also has {a} missing values.")
 
-# cleaning up missing values for george karl
-player_data_df["height"] = player_data_df["height"].fillna("6-2")
-player_data_df["weight"] = player_data_df["weight"].fillna(185)
-player_data_df["position"] = player_data_df["position"].fillna("G")
+    # cleaning up missing values for george karl
+    player_data_df["height"] = player_data_df["height"].fillna("6-2")
+    player_data_df["weight"] = player_data_df["weight"].fillna(185)
+    player_data_df["position"] = player_data_df["position"].fillna("G")
 
-# 9 simple steps to changing heights from 'feet-inches' format
-# 1.) adds column for feet using 'height' column
-player_data_df["feet"] = player_data_df.height.str[:1] 
-# 2.) adds column for inches using 'height' column
-player_data_df["inches"] = player_data_df.height.str[2:4]
-# 3.) converts 'feet' column from string to integer
-player_data_df["feet"] = player_data_df["feet"].astype(int)
-# 4.) converts 'inches' column from string to integer
-player_data_df["inches"] = player_data_df["inches"].astype(int)
-# 5.) converts 'feet' into inches
-player_data_df["feet_in_inches"] = (player_data_df["feet"] * 12).to_frame("feet")
-# 6.) adds new column 'total_inches' that adds the totals from 'feet_in_inches' and 'inches' columns
-player_data_df["total_inches"] = (player_data_df["feet_in_inches"] + player_data_df["inches"])
-# 7.) replaces the original values in 'height' with the new values from 'total_inches'
-player_data_df = player_data_df.assign(height=player_data_df["total_inches"])
-# 8.) drops 'feet,' 'inches,' 'feet_in_inches,' and 'total_inches' columns we used to convert the original data to the new
-player_data_df = player_data_df.drop(["feet", "inches", "feet_in_inches", 
-                                      "total_inches"], axis=1)
-# 9.) renames the 'height' column to 'height_inches'
-player_data_df = player_data_df.rename(columns={"height" : "height_inches"})
-                                      
-# replaces the 'nan' values in 'college' with 'no college listed'
-player_data_df["college"] = player_data_df["college"].fillna("No college listed")
+    # 9 simple steps to changing heights from 'feet-inches' format
+    # 1.) adds column for feet using 'height' column
+    player_data_df["feet"] = player_data_df.height.str[:1] 
+    # 2.) adds column for inches using 'height' column
+    player_data_df["inches"] = player_data_df.height.str[2:4]
+    # 3.) converts 'feet' column from string to integer
+    player_data_df["feet"] = player_data_df["feet"].astype(int)
+    # 4.) converts 'inches' column from string to integer
+    player_data_df["inches"] = player_data_df["inches"].astype(int)
+    # 5.) converts 'feet' into inches
+    player_data_df["feet_in_inches"] = (player_data_df["feet"] * 12).to_frame("feet")
+    # 6.) adds new column 'total_inches' that adds the totals from 'feet_in_inches' and 'inches' columns
+    player_data_df["total_inches"] = (player_data_df["feet_in_inches"] + player_data_df["inches"])
+    # 7.) replaces the original values in 'height' with the new values from 'total_inches'
+    player_data_df = player_data_df.assign(height=player_data_df["total_inches"])
+    # 8.) drops 'feet,' 'inches,' 'feet_in_inches,' and 'total_inches' columns we used to convert the original data to the new
+    player_data_df = player_data_df.drop(["feet", "inches", "feet_in_inches", 
+                                        "total_inches"], axis=1)
+    # 9.) renames the 'height' column to 'height_inches'
+    player_data_df = player_data_df.rename(columns={"height" : "height_inches"})
 
-# replaces 'nan' values in 'birth_date' column with 'not listed'
-player_data_df["birth_date"] = player_data_df["birth_date"].fillna("Not listed")
+    # changes 'weight' from float to integer
+    player_data_df["weight"] = player_data_df["weight"].astype(int)   
 
-# print out the dataframe
-player_data_df
+    # replaces the 'nan' values in 'college' with 'no college listed'
+    player_data_df["college"] = player_data_df["college"].fillna("No college listed")
+
+    # replaces 'nan' values in 'birth_date' column with 'not listed'
+    player_data_df["birth_date"] = player_data_df["birth_date"].fillna("Not listed")
+
+    # print out the dataframe
+    return player_data_df
 
 #-------- Players DataFrame -------------
-# import the Players.csv file into pandas
-players_df = pd.read_csv("/Users/DataScience/Rimshotz/alley-oop-nba-stats/Players.csv")
-# title and print out shape of dataframe
-b = players_df.isnull().sum().sum()
-players_shape = players_df.shape
-print("Player Data Information")
-print(f"Consisting of {players_shape[0]} rows and {players_shape[1]} columns")
-print(f"Not all data is present.  We still have {b} missing values.")
+def players_info():
+    """
+    collective function to return players_df = all work done in nba_acquisition.ipynb file
+    """
+    # import the Players.csv file into pandas
+    players_df = pd.read_csv("/Users/DataScience/Rimshotz/alley-oop-nba-stats/Players.csv")
 
-# change the spelling of 'collage' column to 'college'
-players_df = players_df.rename(columns={"collage" : "college"})
+    # title and print out shape of dataframe
+    b = players_df.isnull().sum().sum()
+    players_shape = players_df.shape
+    print("Player Data Information")
+    print(f"Consisting of {players_shape[0]} rows and {players_shape[1]} columns")
+    print(f"Not all data is present.  We still have {b} missing values.")
 
-# drop 'Unnamed: 0' column
-players_df = players_df.drop(columns="Unnamed: 0", axis=1)
+    # change the spelling of 'collage' column to 'college', and 'height' and 'weight' for clarity
+    players_df = players_df.rename(columns={"collage" : "college"})
+    players_df = players_df.rename(columns={"height" : "height_inches"})
+    players_df = players_df.rename(columns={"weight" : "weight_lbs"})
 
-# drop index 223 - all values in that row are NaN
-players_df = players_df.drop([223])
+    # drop 'Unnamed: 0' column
+    players_df = players_df.drop(columns="Unnamed: 0", axis=1)
 
-# convert 'height' from centimeters to inches (2.54 cm / inch)
-players_df["height"] = players_df.height.div(2.54).round(decimals=2)
-# get rid of decimal in height
-players_df["height"] = players_df["height"].astype(int)
+    # drop index 223 - all values in that row are NaN
+    players_df = players_df.drop([223])
 
-# convert 'weight' from kilos to pounds (2.2 lbs / kilo)
-players_df["weight"] = players_df.weight.mul(2.2).round(decimals=2)
-# get rid of decimal point in weight
-players_df["weight"] = players_df["weight"].astype(int)
+    # convert 'height_inches' from centimeters to inches (2.54 cm / inch)
+    players_df["height_inches"] = players_df.height_inches.div(2.54).round(decimals=2)
 
-# getting rid of that unnecessary '.0' in 'born'
-players_df["born"] = players_df["born"].astype(int)
+    # get rid of decimal in height
+    players_df["height_inches"] = players_df["height_inches"].astype(int)
 
-# replacing the nan values in 'college', 'birth_city,' and 'birth_state'
-columns = ["college" , "birth_city", "birth_state"]
-players_df[columns] = players_df[columns].fillna("Not Available")
+    # convert 'weight_lbs' from kilos to pounds (2.2 lbs / kilo)
+    players_df["weight_lbs"] = players_df.weight_lbs.mul(2.2).round(decimals=2)
 
-# print out the dataframe
-players_df
+    # get rid of decimal point in weight
+    players_df["weight_lbs"] = players_df["weight_lbs"].astype(int)
+
+    # getting rid of that unnecessary '.0' in 'born'
+    players_df["born"] = players_df["born"].astype(int)
+
+    # replacing the nan values in 'college', 'birth_city,' and 'birth_state'
+    columns = ["college" , "birth_city", "birth_state"]
+    players_df[columns] = players_df[columns].fillna("Not Available")
+
+    # print out the dataframe
+    return players_df
 
 #-------- Seasons Stats DataFrame -------
-# import the Seasons_Stats.csv file into pandas
-seasons_stats_df = pd.read_csv("/Users/DataScience/Rimshotz/alley-oop-nba-stats/Seasons_Stats.csv")
-# title and print out shape of dataframe
-c = seasons_stats_df.isnull().sum().sum()
-seasons_stats_shape = seasons_stats_df.shape
-print("Statistical Information by Season")
-print(f"Consisting of {seasons_stats_shape[0]} rows and {seasons_stats_shape[1]} columns")
-print(f"While informative, still needs work: we are missing {c} values.")
 
-# rename the columns for clarity
-seasons_stats_df.rename(
-        columns={
-            "Year": "year",
-            "Player": "player",
-            "Pos": "position",
-            "Age": "age",
-            "Tm": "team",
-            "G": "games",
-            "GS": "games_started",
-            "MP": "minutes_played",
-            "PER": "player_efficiency",
-            "TS%": "true_shooting_%",
-            "3PAr": "three_pt_tries",
-            "FTr": "free_throws",
-            "ORB%": "off_rebound_%",
-            "DRB%": "def_rebound_%",
-            "TRB%": "total_rebound_%",
-            "AST%": "assist_%",
-            "STL%": "steal_%",
-            "BLK%": "block_%",
-            "TOV%" : "turnover_%",
-            "USG%": "usage_%",
-            "blanl": "blank1",
-            "OWS": "offensive_win_shares",
-            "DWS": "defensive_win_shares",
-            "WS": "win_shares",
-            "WS/48": "win_shares_per_48min",
-            "OBPM": "off_box_plus_minus",
-            "DBPM": "def_box_plus_minus",
-            "BPM": "box_plus_minus",
-            "VORP": "value_over_replacement",
-            "FG" : "field_goals", 
-            "FGA" : "field_goal_attempts",
-            "FG%" : "field_goal_%", 
-            "3P" : "3_pointers", 
-            "3PA" : "3_point_tries",
-            "3P%" : "3_point_%",
-            "2P" : "2_pointers",
-            "2PA" : "2_point_tries",
-            "2P%" : "2_point_%",
-            "eFG%" : "effective_field_goal_%",
-            "FT" : "free_throws",
-            "FTA" : "free_throw_attempts",
-            "FT%" : "free_throw_%",
-            "ORB" : "off_rebounds",
-            "DRB" : "def_rebounds",
-            "TRB" : "total_rebounds",
-            "AST" : "assists",
-            "STL" : "steals",
-            "BLK" : "blocks",
-            "TOV" : "turnovers",
-            "PF" : "personal_fouls",
-            "PTS" : "points",
-        },
-        inplace=True,
-        )
+def seasons_stats():
+    """
+    combined function to return cleaned seasons_stats_df = work done in nba_acquistion.ipynb
+    """
+    # import the Seasons_Stats.csv file into pandas
+    seasons_stats_df = pd.read_csv("/Users/DataScience/Rimshotz/alley-oop-nba-stats/Seasons_Stats.csv")
+    # title and print out shape of dataframe
+    c = seasons_stats_df.isnull().sum().sum()
+    seasons_stats_shape = seasons_stats_df.shape
+    print("Statistical Information by Season")
+    print(f"Consisting of {seasons_stats_shape[0]} rows and {seasons_stats_shape[1]} columns")
+    print(f"While informative, still needs work: we are missing {c} values.")
 
-# drop 'Unnamed: 0,' 'blank1', and 'blank2'columns
-seasons_stats_df = seasons_stats_df.drop(["Unnamed: 0","blank1", "blank2"], axis=1)
+    # rename the columns for clarity
+    seasons_stats_df.rename(
+            columns={
+                "Year": "year",
+                "Player": "player",
+                "Pos": "position",
+                "Age": "age",
+                "Tm": "team",
+                "G": "games",
+                "GS": "games_started",
+                "MP": "minutes_played",
+                "PER": "player_efficiency",
+                "TS%": "true_shooting_%",
+                "3PAr": "three_pt_tries",
+                "FTr": "free_throws",
+                "ORB%": "off_rebound_%",
+                "DRB%": "def_rebound_%",
+                "TRB%": "total_rebound_%",
+                "AST%": "assist_%",
+                "STL%": "steal_%",
+                "BLK%": "block_%",
+                "TOV%" : "turnover_%",
+                "USG%": "usage_%",
+                "blanl": "blank1",
+                "OWS": "offensive_win_shares",
+                "DWS": "defensive_win_shares",
+                "WS": "win_shares",
+                "WS/48": "win_shares_per_48min",
+                "OBPM": "off_box_plus_minus",
+                "DBPM": "def_box_plus_minus",
+                "BPM": "box_plus_minus",
+                "VORP": "value_over_replacement",
+                "FG" : "field_goals", 
+                "FGA" : "field_goal_attempts",
+                "FG%" : "field_goal_%", 
+                "3P" : "3_pointers", 
+                "3PA" : "3_point_tries",
+                "3P%" : "3_point_%",
+                "2P" : "2_pointers",
+                "2PA" : "2_point_tries",
+                "2P%" : "2_point_%",
+                "eFG%" : "effective_field_goal_%",
+                "FT" : "free_throws",
+                "FTA" : "free_throw_attempts",
+                "FT%" : "free_throw_%",
+                "ORB" : "off_rebounds",
+                "DRB" : "def_rebounds",
+                "TRB" : "total_rebounds",
+                "AST" : "assists",
+                "STL" : "steals",
+                "BLK" : "blocks",
+                "TOV" : "turnovers",
+                "PF" : "personal_fouls",
+                "PTS" : "points",
+            },
+            inplace=True,
+            )
 
-# replacing NaN ages with 1's
-seasons_stats_df["age"] = seasons_stats_df["age"].fillna(1)
+    # drop 'Unnamed: 0,' 'blank1', and 'blank2'columns
+    seasons_stats_df = seasons_stats_df.drop(["Unnamed: 0","blank1", "blank2"], axis=1)
 
-# dropping rows that are all NaNs
-seasons_stats_df = seasons_stats_df.drop([312,   487,   618,   779,   911,  1021,  1128,  1236,  1348,
-             1459,  1577,  1682,  1808,  1942,  2078,  2211,  2347,  2481,
-             2659,  2866,  3068,  3314,  3580,  3850,  4096,  4373,  4648,
-             5006,  5381,  5726,  6084,  6448,  6822,  7214,  7558,  7921,
-             8301,  8680,  9107,  9546, 10006, 10448, 10907, 11357, 11839,
-            12292, 12838, 13413, 13961, 14469, 14966, 15504, 16005, 16489,
-            17075, 17661, 18225, 18742, 19338, 19921, 20500, 21126, 21678,
-            22252, 22864, 23516, 24095])
+    # replacing NaN ages with 1's
+    seasons_stats_df["age"] = seasons_stats_df["age"].fillna(1)
 
-# change dtypes from floats to integers in the appropriate columns
-cols = ["year", "age", "games", "assists", "personal_fouls", "points"]
-seasons_stats_df[cols] = seasons_stats_df[cols].astype(int)
+    # dropping rows that are all NaNs
+    seasons_stats_df = seasons_stats_df.drop([312,   487,   618,   779,   911,  1021,  1128,  1236,  1348,
+                1459,  1577,  1682,  1808,  1942,  2078,  2211,  2347,  2481,
+                2659,  2866,  3068,  3314,  3580,  3850,  4096,  4373,  4648,
+                5006,  5381,  5726,  6084,  6448,  6822,  7214,  7558,  7921,
+                8301,  8680,  9107,  9546, 10006, 10448, 10907, 11357, 11839,
+                12292, 12838, 13413, 13961, 14469, 14966, 15504, 16005, 16489,
+                17075, 17661, 18225, 18742, 19338, 19921, 20500, 21126, 21678,
+                22252, 22864, 23516, 24095])
 
-# fill the rest of the nulls with '1' for modeling purposes
-seasons_stats_df = seasons_stats_df.fillna(1)
+    # change dtypes from floats to integers in the appropriate columns
+    cols = ["year", "age", "games", "assists", "personal_fouls", "points"]
+    seasons_stats_df[cols] = seasons_stats_df[cols].astype(int)
 
-# change these newly minted '1's from floats to integers
-more_cols = ["games_started", "minutes_played", "off_rebounds", "def_rebounds",
-            "total_rebounds", "steals", "blocks", "turnovers"]
-seasons_stats_df[more_cols] = seasons_stats_df[more_cols].astype(int)
+    # fill the rest of the nulls with '1' for modeling purposes
+    seasons_stats_df = seasons_stats_df.fillna(1)
 
-#print out the dataframe
-seasons_stats_df
+    # change these newly minted '1's from floats to integers
+    more_cols = ["games_started", "minutes_played", "off_rebounds", "def_rebounds",
+                "total_rebounds", "steals", "blocks", "turnovers"]
+    seasons_stats_df[more_cols] = seasons_stats_df[more_cols].astype(int)
+
+    #print out the dataframe
+    return seasons_stats_df
 
 #-------- Resources for player_data_df ----------
 
