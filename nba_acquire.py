@@ -3,7 +3,6 @@ import pandas as pd
 import numpy as np
 import os
 
-#%matplotlib inline 
 import matplotlib as plt
 import seaborn as sns
 
@@ -25,9 +24,9 @@ def null_percentages(df):
     return perct
 
 #------- Player Data DataFrame ------------
-def get_player_data():
+def player_data():
     """
-    function to return cleaned up 'player_data_df' = cleaning done in acquire.ipynb
+    function to return the cleaned player_data_df
     """
     # import the player_data.csv file into pandas
     player_data_df = pd.read_csv("/Users/DataScience/Rimshotz/alley-oop-nba-stats/player_data.csv")
@@ -64,10 +63,7 @@ def get_player_data():
                                         "total_inches"], axis=1)
     # 9.) renames the 'height' column to 'height_inches'
     player_data_df = player_data_df.rename(columns={"height" : "height_inches"})
-
-    # changes 'weight' from float to integer
-    player_data_df["weight"] = player_data_df["weight"].astype(int)   
-
+                                        
     # replaces the 'nan' values in 'college' with 'no college listed'
     player_data_df["college"] = player_data_df["college"].fillna("No college listed")
 
@@ -78,13 +74,12 @@ def get_player_data():
     return player_data_df
 
 #-------- Players DataFrame -------------
-def players_info():
+def data_of_players():
     """
-    collective function to return players_df = all work done in nba_acquisition.ipynb file
+    function to return cleaned players_df
     """
     # import the Players.csv file into pandas
     players_df = pd.read_csv("/Users/DataScience/Rimshotz/alley-oop-nba-stats/Players.csv")
-
     # title and print out shape of dataframe
     b = players_df.isnull().sum().sum()
     players_shape = players_df.shape
@@ -92,10 +87,8 @@ def players_info():
     print(f"Consisting of {players_shape[0]} rows and {players_shape[1]} columns")
     print(f"Not all data is present.  We still have {b} missing values.")
 
-    # change the spelling of 'collage' column to 'college', and 'height' and 'weight' for clarity
+    # change the spelling of 'collage' column to 'college'
     players_df = players_df.rename(columns={"collage" : "college"})
-    players_df = players_df.rename(columns={"height" : "height_inches"})
-    players_df = players_df.rename(columns={"weight" : "weight_lbs"})
 
     # drop 'Unnamed: 0' column
     players_df = players_df.drop(columns="Unnamed: 0", axis=1)
@@ -103,17 +96,15 @@ def players_info():
     # drop index 223 - all values in that row are NaN
     players_df = players_df.drop([223])
 
-    # convert 'height_inches' from centimeters to inches (2.54 cm / inch)
-    players_df["height_inches"] = players_df.height_inches.div(2.54).round(decimals=2)
-
+    # convert 'height' from centimeters to inches (2.54 cm / inch)
+    players_df["height"] = players_df.height.div(2.54).round(decimals=2)
     # get rid of decimal in height
-    players_df["height_inches"] = players_df["height_inches"].astype(int)
+    players_df["height"] = players_df["height"].astype(int)
 
-    # convert 'weight_lbs' from kilos to pounds (2.2 lbs / kilo)
-    players_df["weight_lbs"] = players_df.weight_lbs.mul(2.2).round(decimals=2)
-
+    # convert 'weight' from kilos to pounds (2.2 lbs / kilo)
+    players_df["weight"] = players_df.weight.mul(2.2).round(decimals=2)
     # get rid of decimal point in weight
-    players_df["weight_lbs"] = players_df["weight_lbs"].astype(int)
+    players_df["weight"] = players_df["weight"].astype(int)
 
     # getting rid of that unnecessary '.0' in 'born'
     players_df["born"] = players_df["born"].astype(int)
@@ -126,10 +117,9 @@ def players_info():
     return players_df
 
 #-------- Seasons Stats DataFrame -------
-
 def seasons_stats():
     """
-    combined function to return cleaned seasons_stats_df = work done in nba_acquistion.ipynb
+    function to return cleaned seasons_stats_df
     """
     # import the Seasons_Stats.csv file into pandas
     seasons_stats_df = pd.read_csv("/Users/DataScience/Rimshotz/alley-oop-nba-stats/Seasons_Stats.csv")
