@@ -6,6 +6,8 @@ import os
 import matplotlib as plt
 import seaborn as sns
 
+np.random.seed(123)
+
 # function to get total null values in each column
 def null_counts(df):
     """
