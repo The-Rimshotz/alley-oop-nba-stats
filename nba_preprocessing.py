@@ -31,14 +31,14 @@ players_df = nba_acquire.data_of_players()
 players_df = players_df.rename(columns={"Player" : "player"})
 
 # dropping duplicate column names (the same names as in seasons_stats) so that we can merge in 'final_df'
-players_df = players_df.drop(["player", "height", "weight", "college",], axis=1)
+# players_df = players_df.drop(["player", "height", "weight", "college",], axis=1)
 
 #--------- seasons_stats_df ---------
 # get it from nba_acquire.py
 seasons_stats_df = nba_acquire.seasons_stats()
 
 # get rid of duplicate columns to avoid 'ValueError: Plan shapes are not aligned' error on later df merge
-seasons_stats_df = seasons_stats_df.loc[:,~seasons_stats_df.columns.duplicated()]
+# seasons_stats_df = seasons_stats_df.loc[:,~seasons_stats_df.columns.duplicated()]
 
 # converting certain datatypes from floats to integers
 convert_dict = {"2_point_tries" : int, 
@@ -65,16 +65,32 @@ convert_dict = {"2_point_tries" : int,
                 "year" : int,
                } 
 
-# turn off column limit so I can see the data in all columns:
+# # turn off column limit so I can see the data in all columns:
 pd.options.display.max_columns = None
-# 
+
+# # change the datatypes
 seasons_stats_df = seasons_stats_df.astype(convert_dict) 
 
 #--------- final_df -----------------
-def working_df():
+def final_df():
     """
     Function to return merged and completely cleaned final_df
     """
+
+#------------ Get cleaned player_data_df ------------
+
+    player_data_df
+
+#------------ Get cleaned players_df ----------------
+
+    players_df 
+
+#------------ Get cleaned seasons_stats_df ----------
+
+    seasons_stats_df 
+
+#------------ Merging DataFrames --------------------
+
     # merging seasons_stats and player_data dfs
     final_df = pd.merge(seasons_stats_df, player_data_df, on=["player"], how="left")
 
@@ -82,9 +98,9 @@ def working_df():
     final_df = pd.concat([final_df, players_df])
 
     # dropping duplicates for final_df
-    final_df.drop_duplicates(subset="player")
+    final_df.drop_duplicates(subset="player", inplace=True)
 
-    # filling all nulls with 1
+    # filling all nulls with a 1
     final_df = final_df.fillna(1)
 
     # changing datatypes of columns for better view
@@ -118,10 +134,7 @@ def working_df():
                     "year_end" : int, 
                     "year_start" : int,
                 } 
-
-    # turn off column limit so I can see the data in all columns:
-    pd.options.display.max_columns = None
-    
+    # apply datatype changes
     final_df = final_df.astype(final_convert) 
 
     # dropping 'position_y', 'born', 'year_start', 'year_end', 'three_pt_tries'
@@ -168,6 +181,14 @@ def working_df():
 
     # setting 'final_df' column 'player' to index
     final_df = final_df.set_index("player")
+
+    #--------- Title final_df ---------------------------
+    d = final_df.isnull().sum().sum()
+    final_df_shape = final_df.shape
+    print("Final DataFrame")
+    print("Consisting of player_data_df, players_df, and seasons_stats_df.")
+    print(f"It contains {final_df_shape[0]} rows and {final_df_shape[1]} columns")
+    print(f"It has loads of data, but also has {d} missing values.")
 
     # get the dataframe back
     return final_df
