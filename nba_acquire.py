@@ -218,7 +218,10 @@ def seasons_stats():
                 "total_rebounds", "steals", "blocks", "turnovers"]
     seasons_stats_df[more_cols] = seasons_stats_df[more_cols].astype(int)
 
-    #print out the dataframe
+    # get rid of duplicate columns to avoid 'ValueError: Plan shapes are not aligned' error on later df merge
+    seasons_stats_df = seasons_stats_df.loc[:,~seasons_stats_df.columns.duplicated()]
+
+    # print out the dataframe
     return seasons_stats_df
 
 #-------- Resources for player_data_df ----------
