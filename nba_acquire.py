@@ -31,7 +31,7 @@ def player_data():
     function to return the cleaned player_data_df
     """
     # import the player_data.csv file into pandas
-    player_data_df = pd.read_csv("/Users/DataScience/Rimshotz/alley-oop-nba-stats/player_data.csv")
+    player_data_df = pd.read_csv("data/raw/player_data.csv")
 
     # title and print out shape of dataframe
     a = player_data_df.isnull().sum().sum()
@@ -81,7 +81,7 @@ def data_of_players():
     function to return cleaned players_df
     """
     # import the Players.csv file into pandas
-    players_df = pd.read_csv("/Users/DataScience/Rimshotz/alley-oop-nba-stats/Players.csv")
+    players_df = pd.read_csv("data/raw/Players.csv")
     # title and print out shape of dataframe
     b = players_df.isnull().sum().sum()
     players_shape = players_df.shape
@@ -124,7 +124,7 @@ def seasons_stats():
     function to return cleaned seasons_stats_df
     """
     # import the Seasons_Stats.csv file into pandas
-    seasons_stats_df = pd.read_csv("/Users/DataScience/Rimshotz/alley-oop-nba-stats/Seasons_Stats.csv")
+    seasons_stats_df = pd.read_csv("data/raw/Seasons_Stats.csv")
     # title and print out shape of dataframe
     c = seasons_stats_df.isnull().sum().sum()
     seasons_stats_shape = seasons_stats_df.shape
